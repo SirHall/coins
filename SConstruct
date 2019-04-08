@@ -7,19 +7,23 @@ includeDir = ["include"]
 buildDir = "build"
 binDir = "bin"
 
+libs = [ \
+    "pthread" \
+]
+
 #bt - build type. Use example: $ scons -bd=debug
 cppFlags = {\
-    "standard" : "-std=c++17",\
-    "debug" : "-std=c++17 -g",\
-    "release" : "-std=c++17 -O3"\
+    "standard" : "",\
+    "debug" : "-g",\
+    "release" : "-O3 -flto -ffast-math"\
 }
 
-usedCPPFlags = ""
+usedCPPFlags = "-std=c++17 -pthread -lpthread -Wall"
 
 if "bt" in ARGUMENTS:
-    usedCPPFlags = cppFlags[ARGUMENTS["bt"]]
+    usedCPPFlags = usedCPPFlags + " " + cppFlags[ARGUMENTS["bt"]]
 else:
-    usedCPPFlags = cppFlags["standard"]
+    usedCPPFlags = usedCPPFlags + " " + cppFlags["standard"]
 
 #print("\t\t" + usedCPPFlags)
 
@@ -33,7 +37,7 @@ def RecursiveGlob(pathname, pattern):
             matches.append(relPath)
     return matches
 
-env = Environment(CPPPATH = includeDir, CXXFLAGS = usedCPPFlags)
+env = Environment(CPPPATH = includeDir, CXXFLAGS = usedCPPFlags, LIBS = libs)
 
 env.VariantDir(variant_dir = buildDir, src_dir = srcDir, duplicate = 0)
 
