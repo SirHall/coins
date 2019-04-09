@@ -20,7 +20,7 @@
 // };
 
 //Solves a single entry with multithreading
-unsigned int SolveMT(
+std::shared_ptr<std::vector<unsigned long>> SolveMT(
     std::shared_ptr<std::vector<Entry>> entries, 
     std::shared_ptr<PrimeGen> primes, unsigned int threads);
     

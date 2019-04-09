@@ -22,59 +22,73 @@
     // return std::move(answers);
 // }
 
-unsigned int SolveSingleMT(
+//This function will not be globally avaliable
+//and should not be avaliable outsie this source file
+void SolveSingleMT(
     std::shared_ptr<std::vector<Entry>> entries, 
-    std::shared_ptr<PrimeGen> primes,
-    std::shared_ptr<std::mutex> mut,
-    std::shared_ptr<unsigned int> sols){
+    std::shared_ptr<PrimeGen> primes, unsigned int *index,
+    std::mutex *srcMut, std::mutex *destMut,
+    std::shared_ptr<std::vector<unsigned long>> sols){
     
     Entry entry;
     bool moreEntries = true;
-    unsigned int solutions = 0;
 
     while(moreEntries){
-        std::cout << "Before\n";
         moreEntries = true;
         {
-            std::lock_guard<std::mutex> lock(*mut);
-            if(entries->size() > 0){
-                entry = entries->at(entries->size() - 1);
-                entries->pop_back();
+            std::lock_guard<std::mutex> lock(*srcMut);
+            if(*index < entries->size()){
+                entry = entries->at(*index);
+                entry.SetIndex(*index);
+                (*index)++;
+                // std::cout << "Index: " << entry.GetIndex() << "\n";
             }else{
                 moreEntries = false;
             }
         }
 
         if(moreEntries){
-            solutions += SolveSingle(entry, *primes);
+            unsigned long solutions = SolveSingle(entry, *primes);
+            // std::cout << "Found: " << solutions << "sols\n";
+            {
+                std::lock_guard<std::mutex> lock(*destMut);
+                (*sols)[entry.GetIndex()] = solutions;
+            }
         }
     }
 
-    {
-        std::lock_guard<std::mutex> lock(*mut);
-        *sols += solutions; 
-    }
+    // {
+    //     std::lock_guard<std::mutex> lock(*mut);
+    //     std::cout << "Before\n";
+    //     *sols = *sols + solutions; 
+    // }
 
-    return solutions;
+    // return solutions;
 }
 
-//Solves a single entry
-unsigned int SolveMT(
+//Solves a single entry, returns list of solution counts
+ std::shared_ptr<std::vector<unsigned long>> SolveMT(
     std::shared_ptr<std::vector<Entry>> entries, 
     std::shared_ptr<PrimeGen> primes, unsigned int threads){
     
-    std::shared_ptr<std::mutex> mut;
-    std::shared_ptr<unsigned int> sols;
+    std::mutex *srcMut = new std::mutex();
+    std::mutex *destMut = new std::mutex();
+    
+    std::shared_ptr<std::vector<unsigned long>> sols(
+        new std::vector<unsigned long>());
+    sols->reserve(entries->size()); //It's usually good to reserve space first
+    sols->resize(entries->size()); //Prepare the size of this array
+    unsigned int *index =  new unsigned int(0);
 
     if(threads == 0) //Don't start any new threads
         threads = 1;
-        // return SolveSingle(std::ref(entry), std::ref(primes));
 
     std::vector<std::thread*> liveThreads;
 
     for(unsigned int i = 0; i < threads; i++){
         std::thread *th = 
-            new std::thread(SolveSingleMT, entries, primes, mut, sols);
+            new std::thread(SolveSingleMT, entries, primes, 
+                index, srcMut, destMut, sols);
         // liveThreads
         liveThreads.push_back(th);
     }
@@ -82,9 +96,8 @@ unsigned int SolveMT(
     for(auto thr : liveThreads)
         thr->join();
 
-    unsigned int solsCopy = *sols;
 
-    return solsCopy;
+    return sols;
 }
 
 unsigned int SolveSingle(Entry &entry, PrimeGen &primes){

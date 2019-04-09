@@ -7,13 +7,15 @@
 
 class Entry{
     private:
-        unsigned long solutions = 0;
+        unsigned long 
+            solutions = 0,
+            i = 0; //Stores order index, for multithreading
         // mutable std::shared_mutex mut;
 
     public:
         //We can make these public as they are immutable
         unsigned long amount, minCoins, maxCoins;
-
+        
         Entry();
 
         // Entry(const Entry& other);
@@ -22,15 +24,18 @@ class Entry{
 
         Entry(unsigned long totalAmount, unsigned long coinCount);
 
-        Entry(unsigned long totalAmount, 
-            unsigned long minimumCoins, unsigned long maximumCoins);
+        Entry(unsigned long totalAmount, unsigned long minimumCoins, 
+            unsigned long maximumCoins);
 
         ~Entry();
 
         // Entry& operator=(const Entry&);
 
-        void SetSolutions(unsigned int sols);
-        unsigned int GetSolutions();
+        void SetSolutions(unsigned long sols);
+        unsigned long GetSolutions();
+
+        void SetIndex(unsigned int index);
+        unsigned long GetIndex();
 
 };
 
