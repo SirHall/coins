@@ -33,6 +33,7 @@ unsigned int SolveSingleMT(
     unsigned int solutions = 0;
 
     while(moreEntries){
+        std::cout << "Before\n";
         moreEntries = true;
         {
             std::lock_guard<std::mutex> lock(*mut);
@@ -77,8 +78,6 @@ unsigned int SolveMT(
         // liveThreads
         liveThreads.push_back(th);
     }
-    
-    std::cout << "Before\n"; //Multithreading issue somewhere
 
     for(auto thr : liveThreads)
         thr->join();
