@@ -102,33 +102,35 @@ void SolveSingleMT(
 
 unsigned int SolveSingle(Entry &entry, PrimeGen &primes){
     unsigned int solutions = 0;
-    for(unsigned int i = entry.minCoins; i <= entry.maxCoins; i++)
-        solutions += SolveSingleRec(entry.amount, std::ref(primes), 0, i);
+    //for(unsigned int i = entry.minCoins; i <= entry.maxCoins; i++)
+        solutions += SolveSingleRec(entry.amount, std::ref(primes), 0, 
+            entry.maxCoins, entry.minCoins);
     return solutions;
 }
 
 unsigned int SolveSingleRec(
     unsigned int totAmount, PrimeGen &primes, 
-    unsigned int primeIndex, unsigned int spacesLeft){
-    
+    unsigned int primeIndex, unsigned int spacesLeft, unsigned int spacesLeftMin){
+
     if(spacesLeft == 0 || primes.GetPrime(primeIndex) > totAmount)
         return 0;
 
     unsigned int solutions = 0;    
-    spacesLeft--;
+    //spacesLeft--;
     
     for(unsigned int i = primeIndex; i < primes.TotalPrimes(); i++){
         if(primes.GetPrime(i) > totAmount)
             break;
         //We've reached the end and found a solution
-        if(spacesLeft == 0 && totAmount == primes.GetPrime(i))
-            return 1;
+        if(spacesLeftMin == 1 && totAmount == primes.GetPrime(i))
+            solutions++;
 
         if(spacesLeft > 0){
             // for(unsigned int j = 0; j < spacesLeft; j++){
                 solutions += SolveSingleRec(
                     totAmount - primes.GetPrime(i),
-                    std::ref(primes), i, spacesLeft 
+                    std::ref(primes), i, spacesLeft - 1, 
+                    spacesLeftMin > 1 ? spacesLeftMin - 1 : 1
                 );
             // }
         }

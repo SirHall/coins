@@ -30,6 +30,6 @@ unsigned int SolveSingle(Entry &entry, PrimeGen &primes);
 
 unsigned int SolveSingleRec(
     unsigned int totAmount, PrimeGen &primes, 
-    unsigned int primeIndex, unsigned int spacesLeft);
+    unsigned int primeIndex, unsigned int spacesLeft, unsigned int spacesLeftMin);
 
 #endif
