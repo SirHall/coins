@@ -23,11 +23,10 @@ int main(int argc, char* argv[]){
         while(std::getline(file, line)){
             line += ' ';
             std::vector<std::string> words({""});
-            unsigned int wordIndex = 0;
             
             for(unsigned int i = 0; i < line.length(); i++){
                 if(line[i] == ' ' || line[i] == '\t'){
-                    std::cout << words[words.size() - 1] << '\n';
+                    //std::cout << words[words.size() - 1] << '\n';
                     words.push_back(std::string(""));
                     continue;
                 }
@@ -58,17 +57,32 @@ int main(int argc, char* argv[]){
         std::cout << "Could not find\n";
     }
 
-
+    unsigned int highestPrime = 11; //Just a low, default prime number
+    //Find highest prime that needs to be generated
+    for(auto entry : *entries)
+        if(entry.amount > highestPrime)
+            highestPrime = entry.amount;
 
     auto clock_start = steady_clock::now();
     
-    primes->GeneratePrimes(500);
-     std::shared_ptr<std::vector<unsigned long>> solutions = 
+    primes->GeneratePrimes(highestPrime);
+#ifdef MT
+//Generate using multithreading (Not Windows compatible)
+    std::shared_ptr<std::vector<unsigned long>> solutions = 
         SolveMT(
             entries,
             primes,
             4
         );
+#else
+//Generate using a single thread (Windows compatible)
+    std::shared_ptr<std::vector<unsigned long>> solutions(new std::vector<unsigned long> ());
+    solutions->reserve(entries->size());
+    for(auto entry : *entries){
+        solutions->push_back(SolveSingle(std::ref(entry), std::ref(*primes)));
+    }
+
+#endif
 
     std::cout << "\tCompleted in: " << GetTime(clock_start) << "s\n";
     for(unsigned long sol : *solutions){

@@ -1,6 +1,8 @@
 #include "Solver.hpp"
 #include <memory>
+#ifdef MT
 #include <future>
+#endif
 #include <stack>
 #include <iostream>
 
@@ -24,6 +26,7 @@
 
 //This function will not be globally avaliable
 //and should not be avaliable outsie this source file
+#ifdef MT
 void SolveSingleMT(
     std::shared_ptr<std::vector<Entry>> entries, 
     std::shared_ptr<PrimeGen> primes, unsigned int *index,
@@ -65,7 +68,9 @@ void SolveSingleMT(
 
     // return solutions;
 }
+#endif
 
+#ifdef MT
 //Solves a single entry, returns list of solution counts
  std::shared_ptr<std::vector<unsigned long>> SolveMT(
     std::shared_ptr<std::vector<Entry>> entries, 
@@ -99,6 +104,7 @@ void SolveSingleMT(
 
     return sols;
 }
+#endif
 
 unsigned int SolveSingle(Entry &entry, PrimeGen &primes){
     unsigned int solutions = 0;
