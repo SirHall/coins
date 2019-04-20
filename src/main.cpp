@@ -16,22 +16,26 @@ int main(int argc, char* argv[]){
     );
     
     std::string line = "";
-    //std::cout << argv[0] << 'n';
+    std::cout << argv[0] << '\n';
     std::ifstream file(std::string(argv[1]), std::ifstream::in);
     
     if(file.is_open()){
+        std::cout << "Input lines:\n";
         while(std::getline(file, line)){
             line += ' ';
             std::vector<std::string> words({""});
             
             for(unsigned int i = 0; i < line.length(); i++){
                 if(line[i] == ' ' || line[i] == '\t'){
-                    //std::cout << words[words.size() - 1] << '\n';
                     words.push_back(std::string(""));
                     continue;
                 }
                 words[words.size() - 1] += line[i];
             }
+            std::cout << '\t';
+            for(auto word : words)
+                std::cout << word << ' ';
+            std::cout << '\n';
             switch(words.size()){
                 case 2:
                     entries->push_back(Entry(std::stoi(words[0])));
@@ -49,7 +53,6 @@ int main(int argc, char* argv[]){
                         std::stoi(words[2])
                         ));
                     break;
-
             }
         }
         file.close();
@@ -86,6 +89,6 @@ int main(int argc, char* argv[]){
 
     std::cout << "\tCompleted in: " << GetTime(clock_start) << "s\n";
     for(unsigned long sol : *solutions){
-        std::cout << sol << "\n";
+        std::cout << '\t' << sol << "\n";
     }
 }

@@ -10,7 +10,7 @@ binDir = "bin"
 libs = [ \
 ]
 
-#bt - build type. Use example: $ scons -bd=debug
+#bt - build type. Use example: $ scons bd=debug
 cppFlags = {\
     "standard" : "",\
     "debug" : "-g",\
