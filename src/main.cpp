@@ -4,46 +4,60 @@
 #include "Entry.hpp"
 #include <chrono>
 #include "MathMore.hpp"
+#include <string>
+#include <fstream>
 using namespace std::chrono;
 
 int main(int argc, char* argv[]){
     std::shared_ptr<PrimeGen> primes (new PrimeGen());
     
     std::shared_ptr<std::vector<Entry>> entries(
-        new std::vector<Entry>({
-            // Entry(300, 10, 15),
-            // Entry(300, 10, 15),
-            // Entry(300, 10, 15),
-            // Entry(300, 12),
-            // Entry(300, 11),
-            // Entry(300, 10, 15),
-            // Entry(300, 10, 15),
-            // Entry(300, 10, 15),
-            // Entry(300, 12),
-            // Entry(300, 11)
-            Entry(5),
-            Entry(6, 2, 5),
-            Entry(6, 1, 6),
-            Entry(8, 3),
-            Entry(8, 2, 5),
-            Entry(20, 10, 15),
-            Entry(100, 5, 10),
-            Entry(100, 8, 25),
-            Entry(300, 12),
-            Entry(300, 10, 15)
-        })
+        new std::vector<Entry>()
     );
+    
+    std::string line = "";
+    //std::cout << argv[0] << 'n';
+    std::ifstream file(std::string(argv[1]), std::ifstream::in);
+    
+    if(file.is_open()){
+        while(std::getline(file, line)){
+            line += ' ';
+            std::vector<std::string> words({""});
+            unsigned int wordIndex = 0;
+            
+            for(unsigned int i = 0; i < line.length(); i++){
+                if(line[i] == ' ' || line[i] == '\t'){
+                    std::cout << words[words.size() - 1] << '\n';
+                    words.push_back(std::string(""));
+                    continue;
+                }
+                words[words.size() - 1] += line[i];
+            }
+            switch(words.size()){
+                case 2:
+                    entries->push_back(Entry(std::stoi(words[0])));
+                    break;
+                case 3:
+                    entries->push_back(Entry(
+                        std::stoi(words[0]),
+                        std::stoi(words[1])
+                    ));
+                    break;
+                case 4:
+                    entries->push_back(Entry(
+                        std::stoi(words[0]),
+                        std::stoi(words[1]),
+                        std::stoi(words[2])
+                        ));
+                    break;
 
-//     5
-// 6 2 5
-// 6 1 6
-// 8 3
-// 8 2 5
-// 20 10 15
-// 100 5 10
-// 100 8 25
-// 300 12
-// 300 10 15
+            }
+        }
+        file.close();
+    }else{
+        std::cout << "Could not find\n";
+    }
+
 
 
     auto clock_start = steady_clock::now();
