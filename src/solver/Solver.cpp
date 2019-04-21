@@ -106,11 +106,19 @@ void SolveSingleMT(
 }
 #endif
 
+unsigned long cycles = 0;
+
 unsigned int SolveSingle(Entry &entry, PrimeGen &primes){
     unsigned int solutions = 0;
     //for(unsigned int i = entry.minCoins; i <= entry.maxCoins; i++)
-        solutions += SolveSingleRec(entry.amount, std::ref(primes), 0, 
-            entry.maxCoins, entry.minCoins);
+    cycles = 0;
+    solutions += SolveSingleRec(entry.amount, std::ref(primes), 0, 
+        entry.maxCoins, entry.minCoins);
+    std::cout <<
+        "Prob:   " << entry.amount << ' ' << entry.minCoins << ' ' << 
+            entry.maxCoins << '\n' <<
+        "Cycles: " << cycles << '\n'<<
+        "Sols:   " << solutions << "\n\n";
     return solutions;
 }
 
@@ -121,9 +129,13 @@ unsigned int SolveSingleRec(
     if(spacesLeft == 0 || primes.GetPrime(primeIndex) > totAmount)
         return 0;
 
+    cycles++;
+
     unsigned int solutions = 0;    
     //spacesLeft--;
-    
+    unsigned long subproblems = 0;
+
+
     for(unsigned int i = primeIndex; i < primes.TotalPrimes(); i++){
         if(primes.GetPrime(i) > totAmount)
             break;
@@ -140,6 +152,8 @@ unsigned int SolveSingleRec(
                 );
             // }
         }
+        subproblems++;
     }
+
     return solutions;
 }

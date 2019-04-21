@@ -15,8 +15,9 @@ int main(int argc, char* argv[]){
         new std::vector<Entry>()
     );
     
+
     std::string line = "";
-    std::cout << argv[0] << '\n';
+    // std::cout << argv[0] << '\n';
     std::ifstream file(std::string(argv[1]), std::ifstream::in);
     
     if(file.is_open()){
@@ -86,6 +87,8 @@ int main(int argc, char* argv[]){
     }
 
 #endif
+
+    std::cout << "# of primes: " << primes->TotalPrimes() << '\n';
 
     std::ofstream outputFile;
     outputFile.open("Output.txt");
