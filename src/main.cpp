@@ -90,7 +90,7 @@ int main(int argc, char* argv[]){
     std::ofstream outputFile;
     outputFile.open("Output.txt");
 
-    std::cout << "\tCompleted in: " << GetTime(clock_start) << "s\n";
+    std::cout << "Completed in: " << GetTime(clock_start) << "s\n";
     for(unsigned long sol : *solutions){
         std::cout << '\t' << sol << "\n";
         outputFile << sol << '\n';
