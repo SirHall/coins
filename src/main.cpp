@@ -15,6 +15,16 @@ int main(int argc, char* argv[]){
         new std::vector<Entry>()
     );
     
+#ifdef MT
+
+    unsigned int threadCount = 1;
+    std::cout << "Number of worker threads: ";
+    std::cin >> threadCount;
+    if(threadCount == 0)
+        threadCount = 1;
+
+#endif
+
 
     std::string line = "";
     // std::cout << argv[0] << '\n';
@@ -60,6 +70,7 @@ int main(int argc, char* argv[]){
     }else{
         std::cout << "Could not find\n";
     }
+    std::cout << '\n';
 
     unsigned int highestPrime = 11; //Just a low, default prime number
     //Find highest prime that needs to be generated
@@ -70,13 +81,15 @@ int main(int argc, char* argv[]){
     auto clock_start = steady_clock::now();
     
     primes->GeneratePrimes(highestPrime);
+
+    std::cout << "Generated primes in: " << GetTime(clock_start) << "s\n";
 #ifdef MT
 //Generate using multithreading (Not Windows compatible)
     std::shared_ptr<std::vector<unsigned long>> solutions = 
         SolveMT(
             entries,
             primes,
-            4
+            threadCount
         );
 #else
 //Generate using a single thread (Windows compatible)

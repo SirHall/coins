@@ -1,10 +1,14 @@
 #include "Solver.hpp"
 #include <memory>
 #ifdef MT
-#include <future>
+    #include <future>
 #endif
 #include <stack>
 #include <iostream>
+#include <chrono>
+#include "MathMore.hpp"
+using namespace std::chrono;
+
 
 // Solver::Solver(std::vector<Entry> allEntries) {
     
@@ -112,13 +116,22 @@ unsigned int SolveSingle(Entry &entry, PrimeGen &primes){
     unsigned int solutions = 0;
     //for(unsigned int i = entry.minCoins; i <= entry.maxCoins; i++)
     cycles = 0;
+    auto clock_start = steady_clock::now();
+    
     solutions += SolveSingleRec(entry.amount, std::ref(primes), 0, 
         entry.maxCoins, entry.minCoins);
+    
+
     std::cout <<
-        "Prob:   " << entry.amount << ' ' << entry.minCoins << ' ' << 
+        "Problem:   " << entry.amount << ' ' << entry.minCoins << ' ' << 
             entry.maxCoins << '\n' <<
-        "Cycles: " << cycles << '\n'<<
-        "Sols:   " << solutions << "\n\n";
+        "Cycles:    " << cycles << '\n' <<
+        "Solutions: " << solutions << '\n' <<
+        "Time:      " << GetTime(clock_start) << "\n\n";
+    
+    // std::cout << entry.minCoins << '\t' << cycles << '\n';
+    
+
     return solutions;
 }
 
@@ -129,16 +142,17 @@ unsigned int SolveSingleRec(
     if(spacesLeft == 0 || primes.GetPrime(primeIndex) > totAmount)
         return 0;
 
-    cycles++;
-
     unsigned int solutions = 0;    
     //spacesLeft--;
-    unsigned long subproblems = 0;
+    // unsigned long subproblems = 0;
 
 
     for(unsigned int i = primeIndex; i < primes.TotalPrimes(); i++){
         if(primes.GetPrime(i) > totAmount)
             break;
+        
+        cycles++;
+
         //We've reached the end and found a solution
         if(spacesLeftMin == 1 && totAmount == primes.GetPrime(i))
             solutions++;
@@ -152,7 +166,7 @@ unsigned int SolveSingleRec(
                 );
             // }
         }
-        subproblems++;
+        // subproblems++;
     }
 
     return solutions;
